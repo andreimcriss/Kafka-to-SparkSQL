@@ -30,10 +30,10 @@ object kafkaToSparkSQL{
         //Read Stream from kafka topic
         val dataStream = spark.readStream.format("kafka").option("kafka.bootstrap.servers",kafka_brokers).option("subscribe",kafka_topic).option("startingOffsets", kafka_offset).load()
         //Query dataStream
-        val lines = dataStream.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)").as[(String, String)]
+        val lines = dataStream.selectExpr("CAST(value AS STRING)").as[(String)]
         //Write to Table
-       //val write_to_table = lines.writeStream.outputMode("append").format("parquet").start() 
-       val write_to_table = lines.writeStream.format("console").start() 
+       val write_to_table = lines.writeStream.outputMode("append").format("parquet").start() 
+       //val write_to_table = lines.writeStream.format("console").start() 
         write_to_table.awaitTermination()
         }
 
