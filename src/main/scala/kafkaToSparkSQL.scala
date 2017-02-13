@@ -26,6 +26,7 @@ object kafkaToSparkSQL{
         //intialize Spark Session
         val spark = SparkSession.builder().master(spark_master).appName("streaming"+app_name).enableHiveSupport().getOrCreate()
 
+        import spark.implicits._
         //Read Stream from kafka topic
         val dataStream = spark.readStream.format("kafka").option("kafka.bootstrap.servers",kafka_brokers).option("subscribe",kafka_topic).option("startingOffsets", kafka_offset).load()
         //Query dataStream
