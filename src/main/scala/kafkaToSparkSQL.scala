@@ -35,7 +35,7 @@ object kafkaToSparkSQL{
         val lines = dataStream.selectExpr("CAST(value AS STRING)").as[(String)]
         //Write to Table
        //val write_to_table = lines.writeStream.outputMode("append").format("parquet").queryName(kafka_topic).option("path",url).option("checkpointLocation","/checkpoint").start()
-        val write_to table = lines.writeStream.outputMode("complete").format("memory").queryName(kafka_topic).start()
+        val write_to_table = lines.writeStream.outputMode("append").format("memory").queryName(kafka_topic).start()
 
         //Write Memory table to Physical SparkSQL tables periodically
         val selectall_query = "SELECT * FROM "
