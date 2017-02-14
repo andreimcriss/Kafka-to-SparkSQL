@@ -33,7 +33,7 @@ object kafkaToSparkSQL{
         //Query dataStream
         val lines = dataStream.selectExpr("CAST(value AS STRING)").as[(String)]
         //Write to Table
-       val write_to_table = lines.writeStream.parquet(url).start() 
+       val write_to_table = lines.writeStream.outputMode("append").format("parquet").queryName("bigdata").start()
        //val write_to_table = lines.writeStream.format("console").start() 
         write_to_table.awaitTermination()
         }
