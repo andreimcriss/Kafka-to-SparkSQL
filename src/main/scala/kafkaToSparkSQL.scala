@@ -34,7 +34,7 @@ object kafkaToSparkSQL{
         //Query dataStream
         val lines = dataStream.selectExpr("CAST(value AS STRING)").as[(String)]
         //Write to Table
-       val write_to_table = lines.writeStream.outputMode("append").format("parquet").queryName(kafka_topic).option("path",url).start()
+       val write_to_table = lines.writeStream.outputMode("append").format("parquet").queryName(kafka_topic).option("path",url).option("checkpointLocation",url+"/checkpoint").start()
        //val write_to_table = lines.writeStream.format("console").start() 
         write_to_table.awaitTermination()
         }
