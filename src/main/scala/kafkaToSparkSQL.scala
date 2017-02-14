@@ -16,11 +16,12 @@ object kafkaToSparkSQL{
         |  <kafka_brokers> is the connection string to the kafka kafka_brokers
         |  <kafka_topic> is the name of the topic to read from
         |  <kafka_offset> is the offset to start from: latest OR earliest
+        |  <destination_path> is the path where to write the resulted table. Can be file, hdfs or Bigstep Datalake.
                 """.stripMargin)
       System.exit(1)
     }
         //read arguments
-        val Array(micro_time,app_name, spark_master, kafka_brokers, kafka_topic, kafka_offset) = args
+        val Array(micro_time,app_name, spark_master, kafka_brokers, kafka_topic, kafka_offset,url) = args
         val batch_interval = micro_time.toInt*1000
 
         //intialize Spark Session
@@ -32,7 +33,7 @@ object kafkaToSparkSQL{
         //Query dataStream
         val lines = dataStream.selectExpr("CAST(value AS STRING)").as[(String)]
         //Write to Table
-       val write_to_table = lines.writeStream.outputMode("append").format("parquet").start() 
+       val write_to_table = lines.writeStream.parquet(url).start() 
        //val write_to_table = lines.writeStream.format("console").start() 
         write_to_table.awaitTermination()
         }
