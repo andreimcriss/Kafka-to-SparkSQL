@@ -34,17 +34,17 @@ object kafkaToSparkSQL{
         //Query dataStream
         val lines = dataStream.selectExpr("CAST(value AS STRING)").as[(String)]
         //Write to Table
-       //val write_to_table = lines.writeStream.outputMode("append").format("parquet").queryName(kafka_topic).option("path",url).option("checkpointLocation","/checkpoint").start()
-        val write_to_table = lines.writeStream.outputMode("append").format("memory").queryName(kafka_topic).start()
+       val write_to_table = lines.writeStream.outputMode("append").format("parquet").queryName(kafka_topic).option("path",url).option("checkpointLocation","/checkpoint").start()
+        //val write_to_table = lines.writeStream.outputMode("append").format("memory").queryName(kafka_topic).start()
 
         //Write Memory table to Physical SparkSQL tables periodically
-        val selectall_query = "SELECT * FROM "
-        val timer = new Timer("Rewrite Table", true)
-        timer.schedule(new TimerTask{
-                override def run() {
-                        spark.sql(selectall_query+kafka_topic).write.format("parquet").mode("overwrite").saveAsTable("managed_table_"+kafka_topic)
-                }
-        }, batch_interval, batch_interval)
+        //val selectall_query = "SELECT * FROM "
+        //val timer = new Timer("Rewrite Table", true)
+        //timer.schedule(new TimerTask{
+          //      override def run() {
+            //            spark.sql(selectall_query+kafka_topic).write.format("parquet").mode("overwrite").saveAsTable("managed_table_"+kafka_topic)
+              //  }
+        //}, batch_interval, batch_interval)
         write_to_table.awaitTermination()
         }
 
